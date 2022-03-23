@@ -1,8 +1,23 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import "../styles/globals.css";
+import type { AppContext, AppProps } from "next/app";
+import App from "next/app";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return <Component {...pageProps} />;
 }
 
-export default MyApp
+MyApp.getInitialProps = async (context: AppContext) => {
+  const { ctx } = context;
+  const req = ctx.req;
+  const pathname = ctx.pathname;
+  const res = ctx.res;
+
+  if (!req || !pathname || !res) {
+    return {};
+  }
+
+  const props = { ...(await App.getInitialProps(context)) };
+  return props;
+};
+
+export default MyApp;
