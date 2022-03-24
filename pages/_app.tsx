@@ -1,6 +1,8 @@
 import "../styles/globals.css";
 import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
+import { ServerAuthGuard } from "@/services/AuthGuard";
+import { guestRoutesOnly, protectedRoutes } from "@/config/routes";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
@@ -18,11 +20,15 @@ MyApp.getInitialProps = async (context: AppContext) => {
 
   const props = { ...(await App.getInitialProps(context)) };
 
-  try {
-    throw { error: "Welcome" };
-  } catch (error) {
-    console.log("Catched error", { error });
-  }
+  const authenticator = new ServerAuthGuard(
+    async () => {
+      throw { response: { status: 401 } };
+    },
+    protectedRoutes,
+    guestRoutesOnly,
+    res
+  );
+  await authenticator.authenticateUser(pathname, req.headers.cookie);
 
   return props;
 };
