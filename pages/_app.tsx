@@ -17,6 +17,13 @@ MyApp.getInitialProps = async (context: AppContext) => {
   }
 
   const props = { ...(await App.getInitialProps(context)) };
+
+  try {
+    throw { error: "Welcome" };
+  } catch (error) {
+    console.log("Catched error", { error });
+  }
+
   return props;
 };
 
